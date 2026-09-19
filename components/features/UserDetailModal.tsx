@@ -13,6 +13,7 @@ import Skeleton from "@/components/ui/Skeleton";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { Input, Select, FormField } from "@/components/ui/Input";
 import StatusBadge from "@/components/features/StatusBadge";
+import { useToast } from "@/context/ToastContext";
 
 export default function UserDetailModal({
   open,
@@ -38,6 +39,8 @@ export default function UserDetailModal({
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
 
   const isSelf = currentUser?.id === userId;
+
+  const toast = useToast();
 
   const load = async () => {
     if (!userId) return;
@@ -75,6 +78,7 @@ export default function UserDetailModal({
         return;
       }
       await api.patch(`/users/${user.id}`, body);
+      toast("User updated", "success");
       onChanged();
       await load();
     } catch (err) {
@@ -91,6 +95,7 @@ export default function UserDetailModal({
     try {
       await api.delete(`/users/${user.id}`);
       setConfirmDeactivate(false);
+      toast("User deactivated", "success");
       onChanged();
       await load();
     } catch (err) {
@@ -106,6 +111,7 @@ export default function UserDetailModal({
     setActionLoading("activate");
     try {
       await api.patch(`/users/${user.id}/activate`);
+      toast("User reactivated", "success");
       onChanged();
       await load();
     } catch (err) {

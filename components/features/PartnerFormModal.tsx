@@ -7,6 +7,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import ErrorBanner from "@/components/ui/ErrorBanner";
 import { Input, Select, Textarea, FormField } from "@/components/ui/Input";
+import { useToast } from "@/context/ToastContext";
 
 type FormState = {
   organizationId: string;
@@ -52,6 +53,7 @@ export default function PartnerFormModal({
   const [orgsLoading, setOrgsLoading] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
 
   // reset when open
   useEffect(() => {
@@ -121,6 +123,7 @@ export default function PartnerFormModal({
         await api.post("/partners", payload);
       }
 
+      toast(isEdit ? "Partner updated" : "Partner created", "success");
       onSaved();
       onClose();
     } catch (err) {

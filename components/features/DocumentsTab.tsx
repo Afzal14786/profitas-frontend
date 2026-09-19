@@ -14,6 +14,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import Modal from "@/components/ui/Modal";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { Select, FormField } from "@/components/ui/Input";
+import { useToast } from "@/context/ToastContext";
 
 const documentTypes: { value: DocumentType; label: string }[] = [
   { value: "title", label: "Title" },
@@ -35,6 +36,7 @@ export default function DocumentsTab({
   canUpload: boolean;
 }) {
   const { user, isAdmin } = useAuth();
+  const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [items, setItems] = useState<DocumentItem[]>([]);
@@ -91,8 +93,9 @@ export default function DocumentsTab({
       setDocType("");
       if (fileRef.current) fileRef.current.value = "";
       load();
+      toast("Document uploaded", "success");
     } catch (err) {
-      setUploadError(extractErrorMessage(err));
+      toast(extractErrorMessage(err), "error");
     } finally {
       setUploading(false);
     }
@@ -103,10 +106,11 @@ export default function DocumentsTab({
     setDeletingId(confirmDeleteId);
     try {
       await api.delete(`/documents/${confirmDeleteId}`);
+      toast("Document deleted", "success");
       setConfirmDeleteId(null);
       load();
     } catch (err) {
-      setError(extractErrorMessage(err));
+      toast(extractErrorMessage(err), "error");
     } finally {
       setDeletingId("");
     }

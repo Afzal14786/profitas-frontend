@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import { Input, Select, Textarea, FormField } from "@/components/ui/Input";
 import ErrorBanner from "@/components/ui/ErrorBanner";
 import { Property, Organization } from "@/types";
+import { useToast } from "@/context/ToastContext";
 
 type FormState = {
   organizationId: string;
@@ -47,6 +48,8 @@ export default function PropertyFormModal({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const toast = useToast();
+
   // reset form when modal opens
   useEffect(() => {
     if (!open) return;
@@ -77,9 +80,9 @@ export default function PropertyFormModal({
         setOrgs(
           r.data.data.filter(
             (o) =>
-              o.type === "property_owner" || o.type === "property_developer"
-          )
-        )
+              o.type === "property_owner" || o.type === "property_developer",
+          ),
+        ),
       )
       .catch(() => setOrgs([]));
   }, [open, isEdit]);
@@ -125,6 +128,7 @@ export default function PropertyFormModal({
         await api.post("/properties", payload);
       }
 
+      toast(isEdit ? "Property updated" : "Property created", "success");
       onSaved();
       onClose();
     } catch (err) {
@@ -145,7 +149,10 @@ export default function PropertyFormModal({
         {error && <ErrorBanner message={error} />}
 
         {!isEdit && (
-          <FormField label="Owning Organization" hint="Optional — leave empty to create a personal property.">
+          <FormField
+            label="Owning Organization"
+            hint="Optional — leave empty to create a personal property."
+          >
             <Select
               value={form.organizationId}
               onChange={(e) => update("organizationId", e.target.value)}
@@ -199,7 +206,11 @@ export default function PropertyFormModal({
               <option value="mixed_use">Mixed Use</option>
             </Select>
           </FormField>
-          <FormField label="Value (₹)" required hint="e.g. 52000000 for ₹5.2 Cr">
+          <FormField
+            label="Value (₹)"
+            required
+            hint="e.g. 52000000 for ₹5.2 Cr"
+          >
             <Input
               type="number"
               value={form.value}

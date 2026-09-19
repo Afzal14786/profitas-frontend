@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import ErrorBanner from "@/components/ui/ErrorBanner";
 import { Input, FormField } from "@/components/ui/Input";
 import { formatCrores } from "@/lib/format";
+import { useToast } from "@/context/ToastContext";
 
 export default function LiquidityModal({
   open,
@@ -21,6 +22,7 @@ export default function LiquidityModal({
   property: Property;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState<
@@ -46,6 +48,12 @@ export default function LiquidityModal({
 
       const r = await api.post("/liquidity/requests", body);
       const requestId = r.data.data.id;
+      toast(
+        type === "sell_match"
+          ? "Sell/Match request created"
+          : "Credit request created",
+        "success",
+      );
       onClose();
       router.push(`/liquidity/${requestId}`);
     } catch (err) {
