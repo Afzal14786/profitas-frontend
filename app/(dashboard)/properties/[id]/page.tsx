@@ -22,6 +22,11 @@ import Skeleton from "@/components/ui/Skeleton";
 import StatusBadge from "@/components/features/StatusBadge";
 import PropertyFormModal from "@/components/features/PropertyFormModal";
 import LiquidityModal from "@/components/features/LiquidityModal";
+import DocumentsTab from "@/components/features/DocumentsTab";
+import VerificationsTab from "@/components/features/VerificationsTab";
+import ComplianceTab from "@/components/features/ComplianceTab";
+
+type TabKey = "documents" | "verifications" | "compliance";
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +40,7 @@ export default function PropertyDetailPage() {
   const [actionLoading, setActionLoading] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [liquidityOpen, setLiquidityOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>("documents");
 
   const load = () => {
     setLoading(true);
@@ -52,12 +58,7 @@ export default function PropertyDetailPage() {
   }, [id]);
 
   const archive = async () => {
-    if (
-      !confirm(
-        "Archive this property? It will no longer accept liquidity requests.",
-      )
-    )
-      return;
+    if (!confirm("Archive this property?")) return;
     setActionError("");
     setActionLoading("archive");
     try {
@@ -129,6 +130,12 @@ export default function PropertyDetailPage() {
 
   const isAdmin = user?.role === "admin";
   const canLiquidity = property.status === "verified";
+
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "documents", label: "Documents" },
+    { key: "verifications", label: "Verifications" },
+    { key: "compliance", label: "Compliance" },
+  ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
@@ -276,13 +283,35 @@ export default function PropertyDetailPage() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-3 gap-3">
-        {["Documents", "Verifications", "Compliance"].map((t) => (
-          <Card key={t} className="p-4 text-center">
-            <div className="text-sm font-medium text-slate-700">{t}</div>
-            <div className="text-xs text-slate-400 mt-1">Coming soon</div>
-          </Card>
-        ))}
+      {/* Tabs */}
+      <div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-1.5 inline-flex gap-1">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              className={`px-4 py-2 text-sm rounded-lg font-medium transition-colors ${
+                activeTab === t.key
+                  ? "bg-blue-50 text-blue-700"
+                  : "text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          {activeTab === "documents" && (
+            <DocumentsTab propertyId={property.id} canUpload={true} />
+          )}
+          {activeTab === "verifications" && (
+            <VerificationsTab propertyId={property.id} />
+          )}
+          {activeTab === "compliance" && (
+            <ComplianceTab propertyId={property.id} />
+          )}
+        </div>
       </div>
 
       <PropertyFormModal

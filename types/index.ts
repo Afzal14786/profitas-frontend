@@ -151,3 +151,78 @@ export type UserStats = {
   admins: number;
   investors: number;
 };
+
+export type VerificationType = "title" | "ownership" | "encumbrance" | "dispute";
+
+export type VerificationStatus =
+  | "pending"
+  | "in_review"
+  | "verified"
+  | "rejected";
+
+export type Verification = {
+  id: string;
+  propertyId: string;
+  documentId: string | null;
+  verificationType: VerificationType;
+  status: VerificationStatus;
+  verifiedBy: string | null;
+  remarks: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ComplianceType = "regulatory" | "documentation" | "disclosure";
+
+export type ComplianceStatus =
+  | "pending"
+  | "in_review"
+  | "compliant"
+  | "non_compliant";
+
+export type ComplianceRecord = {
+  id: string;
+  propertyId: string;
+  complianceType: ComplianceType;
+  status: ComplianceStatus;
+  reviewedBy: string | null;
+  remarks: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ComplianceStats = {
+  total: number;
+  pending: number;
+  inReview: number;
+  compliant: number;
+  nonCompliant: number;
+};
+
+export type DocumentType =
+  | "title"
+  | "ownership"
+  | "encumbrance"
+  | "sale_agreement"
+  | "lease"
+  | "investment_agreement"
+  | "collateral"
+  | "compliance"
+  | "other";
+
+export type DocumentStatus = "pending" | "verified" | "rejected";
+
+export type DocumentItem = {
+  id: string;
+  propertyId: string;
+  uploadedBy: string;
+  documentType: DocumentType;
+  fileName: string;
+  cloudinaryPublicId: string;
+  cloudinaryUrl: string;
+  cloudinaryFormat: string | null;
+  cloudinaryBytes: number | null;
+  status: DocumentStatus;
+  createdAt: string;
+  updatedAt: string;
+};
