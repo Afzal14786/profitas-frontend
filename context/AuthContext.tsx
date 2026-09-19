@@ -22,6 +22,7 @@ export type AuthUser = {
 type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -78,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin: user?.role === "admin", login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,35 +10,37 @@ import {
   Handshake,
   Scale,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const items = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/properties", label: "Properties", icon: Building2 },
-  { href: "/liquidity", label: "Liquidity", icon: Sparkles },
-  { href: "/users", label: "Users", icon: Users },
-  { href: "/partners", label: "Partners", icon: Handshake },
-  { href: "/legal", label: "Legal", icon: Scale },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, adminOnly: false },
+  { href: "/properties", label: "Properties", icon: Building2, adminOnly: false },
+  { href: "/liquidity", label: "Liquidity", icon: Sparkles, adminOnly: false },
+  { href: "/users", label: "Users", icon: Users, adminOnly: true },
+  { href: "/partners", label: "Partners", icon: Handshake, adminOnly: false },
+  { href: "/legal", label: "Legal", icon: Scale, adminOnly: false },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { isAdmin } = useAuth();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const visibleItems = items.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <aside className="hidden md:flex md:flex-col w-60 shrink-0 bg-white border-r border-slate-200 min-h-screen">
       <div className="px-5 py-6 border-b border-slate-200">
         <Link href="/" className="block">
           <div className="text-2xl font-bold text-blue-600">PROFITAS</div>
-          <div className="text-xs text-slate-500 mt-1">
-            Liquidity Ecosystem
-          </div>
+          <div className="text-xs text-slate-500 mt-1">Liquidity Ecosystem</div>
         </Link>
       </div>
 
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {items.map(({ href, label, icon: Icon }) => {
+        {visibleItems.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (
             <Link

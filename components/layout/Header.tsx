@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { LogOut, UserCircle2 } from "lucide-react";
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-20">
@@ -22,8 +22,16 @@ export default function Header() {
             <UserCircle2 className="w-6 h-6 text-slate-400" />
             <div className="hidden sm:block leading-tight">
               <div className="font-medium text-slate-800">{user?.name}</div>
-              <div className="text-xs text-slate-500 capitalize">
-                {user?.role}
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${
+                    isAdmin
+                      ? "bg-blue-50 text-blue-700 border border-blue-200"
+                      : "bg-slate-100 text-slate-600 border border-slate-200"
+                  }`}
+                >
+                  {isAdmin ? "Admin" : "Investor"}
+                </span>
               </div>
             </div>
           </div>

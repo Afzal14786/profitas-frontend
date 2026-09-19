@@ -92,6 +92,21 @@ api.interceptors.response.use(
 
 export function extractErrorMessage(err: unknown): string {
   if (axios.isAxiosError(err)) {
+    if (err.response?.status === 403) {
+      return (
+        (err.response.data as { message?: string })?.message ||
+        "You don't have permission to perform this action."
+      );
+    }
+    if (err.response?.status === 401) {
+      return "Your session has expired. Please log in again.";
+    }
+    if (err.response?.status === 404) {
+      return (
+        (err.response.data as { message?: string })?.message ||
+        "Resource not found."
+      );
+    }
     return (
       (err.response?.data as { message?: string })?.message ||
       err.message ||
