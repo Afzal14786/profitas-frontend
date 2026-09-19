@@ -5,24 +5,32 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
-export default function LoginPage() {
-  const { login } = useAuth();
+export default function RegisterPage() {
+  const { register } = useAuth();
   const router = useRouter();
 
-  const [email, setEmail] = useState("admin@profitas.dev");
-  const [password, setPassword] = useState("Password123");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (name.trim().length < 2) return setError("Name is too short.");
+    if (password.length < 8)
+      return setError("Password must be at least 8 characters.");
+    if (password !== confirm) return setError("Passwords do not match.");
+
     setLoading(true);
     try {
-      await login(email, password);
+      await register(name.trim(), email.trim(), password);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -36,9 +44,7 @@ export default function LoginPage() {
       >
         <div>
           <h1 className="text-3xl font-bold text-blue-600">PROFITAS</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            Real Estate Liquidity Ecosystem
-          </p>
+          <p className="text-slate-500 text-sm mt-1">Create your account</p>
         </div>
 
         {error && (
@@ -46,6 +52,20 @@ export default function LoginPage() {
             {error}
           </div>
         )}
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Kajal Yaduvanshi"
+          />
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -71,6 +91,20 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="At least 8 characters"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            required
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="••••••••"
           />
         </div>
@@ -80,23 +114,18 @@ export default function LoginPage() {
           disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2.5 rounded-lg text-sm font-semibold"
         >
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? "Creating account..." : "Create account"}
         </button>
 
         <p className="text-xs text-slate-500 text-center">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/register"
+            href="/login"
             className="text-blue-600 hover:underline font-medium"
           >
-            Create one
+            Sign in
           </Link>
         </p>
-
-        <div className="text-xs text-slate-400 text-center space-y-1 border-t border-slate-100 pt-4">
-          <p>Demo admin: admin@profitas.dev / Password123</p>
-          <p>Demo user: user1@profitas.dev / Password123</p>
-        </div>
       </form>
     </div>
   );

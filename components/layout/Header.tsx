@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { LogOut, UserCircle2 } from "lucide-react";
 
@@ -17,14 +18,17 @@ export default function Header() {
           Real Estate Liquidity Ecosystem
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 text-sm px-2 py-1.5 rounded-lg hover:bg-slate-50 transition-colors"
+          >
             <UserCircle2 className="w-6 h-6 text-slate-400" />
-            <div className="hidden sm:block leading-tight">
+            <div className="hidden sm:block leading-tight text-left">
               <div className="font-medium text-slate-800">{user?.name}</div>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide ${
                     isAdmin
                       ? "bg-blue-50 text-blue-700 border border-blue-200"
                       : "bg-slate-100 text-slate-600 border border-slate-200"
@@ -34,7 +38,7 @@ export default function Header() {
                 </span>
               </div>
             </div>
-          </div>
+          </Link>
 
           <button
             onClick={logout}

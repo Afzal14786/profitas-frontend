@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, HTMLAttributes, ThHTMLAttributes, TdHTMLAttributes } from "react";
 
 export function TableWrapper({ children }: { children: ReactNode }) {
   return (
@@ -21,12 +21,12 @@ export function THead({ children }: { children: ReactNode }) {
 export function Th({
   children,
   className = "",
-}: {
+  ...rest
+}: ThHTMLAttributes<HTMLTableCellElement> & {
   children?: ReactNode;
-  className?: string;
 }) {
   return (
-    <th className={`text-left font-medium px-4 py-3 ${className}`}>
+    <th className={`text-left font-medium px-4 py-3 ${className}`} {...rest}>
       {children}
     </th>
   );
@@ -35,21 +35,27 @@ export function Th({
 export function Tr({
   children,
   className = "",
-}: {
+  ...rest
+}: HTMLAttributes<HTMLTableRowElement> & {
   children: ReactNode;
-  className?: string;
 }) {
   return (
-    <tr className={`border-t border-slate-100 ${className}`}>{children}</tr>
+    <tr className={`border-t border-slate-100 ${className}`} {...rest}>
+      {children}
+    </tr>
   );
 }
 
 export function Td({
   children,
   className = "",
-}: {
+  ...rest
+}: TdHTMLAttributes<HTMLTableCellElement> & {
   children?: ReactNode;
-  className?: string;
 }) {
-  return <td className={`px-4 py-3 ${className}`}>{children}</td>;
+  return (
+    <td className={`px-4 py-3 ${className}`} {...rest}>
+      {children}
+    </td>
+  );
 }

@@ -24,6 +24,7 @@ type AuthContextValue = {
   loading: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<AuthUser>;
+  register: (name: string, email: string, password: string) => Promise<AuthUser>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 };
@@ -34,14 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /* -------------------- bootstrap from stored token -------------------- */
   useEffect(() => {
     const token = tokenStore.access;
     if (!token) {
       setLoading(false);
       return;
     }
-
     api
       .get<{ data: AuthUser }>("/users/me")
       .then((r) => setUser(r.data.data))
@@ -52,7 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  /* -------------------- login -------------------- */
   const login = async (email: string, password: string) => {
     try {
       const r = await api.post("/auth/login", { email, password });
@@ -65,21 +63,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  /* -------------------- logout -------------------- */
+  const register = async (name: string, email: string, password: string) => {
+    try {
+      const r = await api.post("/auth/register", { name, email, password });
+      const { user, accessToken, refreshToken } = r.data.data;
+      tokenStore.set(accessToken, refreshToken);
+      setUser(user);
+      return user as AuthUser;
+    } catch (err) {
+      throw new Error(extractErrorMessage(err));
+    }
+  };
+
   const logout = () => {
     tokenStore.clear();
     setUser(null);
     if (typeof window !== "undefined") window.location.href = "/login";
   };
 
-  /* -------------------- refresh -------------------- */
   const refreshUser = async () => {
     const r = await api.get<{ data: AuthUser }>("/users/me");
     setUser(r.data.data);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin: user?.role === "admin", login, logout, refreshUser }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isAdmin: user?.role === "admin",
+        login,
+        register,
+        logout,
+        refreshUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -132,3 +132,22 @@ export type Partner = {
   organizationName?: string;
   organizationEmail?: string;
 };
+
+export type UserDetail = {
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "admin";
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserStats = {
+  total: number;
+  active: number;
+  inactive: number;
+  admins: number;
+  investors: number;
+};
