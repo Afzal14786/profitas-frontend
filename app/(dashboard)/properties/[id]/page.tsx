@@ -21,6 +21,7 @@ import Card from "@/components/ui/Card";
 import Skeleton from "@/components/ui/Skeleton";
 import StatusBadge from "@/components/features/StatusBadge";
 import PropertyFormModal from "@/components/features/PropertyFormModal";
+import LiquidityModal from "@/components/features/LiquidityModal";
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +34,7 @@ export default function PropertyDetailPage() {
   const [actionError, setActionError] = useState("");
   const [actionLoading, setActionLoading] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [liquidityOpen, setLiquidityOpen] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -50,7 +52,11 @@ export default function PropertyDetailPage() {
   }, [id]);
 
   const archive = async () => {
-    if (!confirm("Archive this property? It will no longer accept liquidity requests."))
+    if (
+      !confirm(
+        "Archive this property? It will no longer accept liquidity requests.",
+      )
+    )
       return;
     setActionError("");
     setActionLoading("archive");
@@ -135,7 +141,6 @@ export default function PropertyDetailPage() {
 
       {actionError && <ErrorBanner message={actionError} />}
 
-      {/* Main card */}
       <Card className="p-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="min-w-0">
@@ -154,7 +159,6 @@ export default function PropertyDetailPage() {
           <StatusBadge status={property.status} />
         </div>
 
-        {/* Metrics */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-8">
           <div>
             <div className="text-xs uppercase tracking-wide text-slate-400">
@@ -193,10 +197,9 @@ export default function PropertyDetailPage() {
           </div>
         )}
 
-        {/* GET LIQUIDITY CTA */}
         <button
           disabled={!canLiquidity}
-          onClick={() => alert("Liquidity modal coming in Phase 4")}
+          onClick={() => setLiquidityOpen(true)}
           className="mt-8 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white py-4 rounded-xl font-semibold text-lg transition-colors"
         >
           GET LIQUIDITY
@@ -206,14 +209,13 @@ export default function PropertyDetailPage() {
             {property.status === "draft"
               ? "Submit this property for verification to unlock liquidity."
               : property.status === "pending_verification"
-              ? "Verification in progress. Liquidity unlocks once verified."
-              : property.status === "rejected"
-              ? "Property was rejected. Fix the issues and resubmit."
-              : "This property is archived."}
+                ? "Verification in progress. Liquidity unlocks once verified."
+                : property.status === "rejected"
+                  ? "Property was rejected. Fix the issues and resubmit."
+                  : "This property is archived."}
           </p>
         )}
 
-        {/* Actions */}
         <div className="flex flex-wrap items-center gap-2 mt-6 pt-6 border-t border-slate-100">
           <Button
             variant="outline"
@@ -274,7 +276,6 @@ export default function PropertyDetailPage() {
         </div>
       </Card>
 
-      {/* Tabs placeholder — filled in Phase 7 */}
       <div className="grid grid-cols-3 gap-3">
         {["Documents", "Verifications", "Compliance"].map((t) => (
           <Card key={t} className="p-4 text-center">
@@ -288,6 +289,12 @@ export default function PropertyDetailPage() {
         open={editOpen}
         onClose={() => setEditOpen(false)}
         onSaved={load}
+        property={property}
+      />
+
+      <LiquidityModal
+        open={liquidityOpen}
+        onClose={() => setLiquidityOpen(false)}
         property={property}
       />
     </div>
