@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { api, tokenStore, extractErrorMessage } from "@/lib/api";
+import {useRouter} from "next/navigation";
 
 export type AuthUser = {
   id: string;
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const token = tokenStore.access;
@@ -78,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     tokenStore.clear();
     setUser(null);
-    if (typeof window !== "undefined") window.location.href = "/login";
+    router.push("/logout");
   };
 
   const refreshUser = async () => {
